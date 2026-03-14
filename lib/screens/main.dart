@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-// ❌ تعطيل الترجمة مؤقتًا
-// import 'core/app_lang.dart';
+import 'package:app_links/app_links.dart';
+
 import 'home.dart';
 import 'setting.dart';
 import 'splash_empty.dart';
@@ -15,20 +15,15 @@ import 'communication.dart';
 import 'emergency.dart';
 import 'learning.dart';
 import 'Level_screen.dart';
+import 'reset_password_screen.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('dark_mode') ?? false;
 
-  // ❌ تعطيل قراءة اللغة من التخزين
-  // final language = prefs.getString('language') ?? 'English';
-
-  // ✅ لغة افتراضية ثابتة مؤقتًا
   const language = 'English';
-
-  // ❌ تعطيل تحميل ملفات الترجمة
-  // await AppLang.load(language);
 
   runApp(MyApp(isDarkMode: isDark, language: language));
 }
@@ -44,39 +39,70 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+
   late bool isDarkMode;
   late String selectedLanguage;
+
+  late AppLinks _appLinks;
+
+  final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     super.initState();
+
     isDarkMode = widget.isDarkMode;
     selectedLanguage = widget.language;
+
+    /// Deep Link Setup
+    _appLinks = AppLinks();
+
+    _appLinks.uriLinkStream.listen((uri) {
+
+      if (uri != null) {
+
+        String? email = uri.queryParameters['email'];
+        String? token = uri.queryParameters['token'];
+
+        if (uri.host == "reset-password") {
+
+          navigatorKey.currentState?.push(
+            MaterialPageRoute(
+              builder: (_) => ResetPasswordScreen(
+                email: email!,
+                token: token!,
+              ),
+            ),
+          );
+
+        }
+      }
+
+    });
+
   }
 
-  // تحديث الثيم وتخزينه
   Future<void> updateTheme(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('dark_mode', value);
     setState(() => isDarkMode = value);
   }
 
-  // ❌ تعطيل تحميل الترجمة — نخليها تخزن اللغة فقط
   Future<void> updateLanguage(String lang) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('language', lang);
-
-    // ❌ كان هنا تحميل json
-    // await AppLang.load(lang);
-
     setState(() => selectedLanguage = lang);
   }
 
   @override
   Widget build(BuildContext context) {
+
     final isArabic = selectedLanguage == 'العربية';
 
     return MaterialApp(
+
+      navigatorKey: navigatorKey,
+
       debugShowCheckedModeBanner: false,
 
       builder: (context, child) => Directionality(
@@ -103,30 +129,42 @@ class _MyAppState extends State<MyApp> {
       ),
 
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+
       initialRoute: '/',
 
       routes: {
-        '/': (_) => const SplashEmptyScreen(),
-        '/logo': (_) => const SplashLogoScreen(),
-        '/login': (_) => const LoginScreen(),
-        '/hello': (_) => const HelloScreen(),
-        '/signUp': (_) => const SignUpScreen(),
-        '/forget': (_) => const ForgetPass(),
-        '/home': (_) => const HomeScreen(),
-        '/chat': (_) => const ChatWithUs(),
-        '/communication': (_) => const Communication(),
-        '/emergency': (_) => const NewContactPage(),
-        '/learning': (_) => const Learning(),
-        '/level': (_) => const LevelScreen(),
-        '/setting': (_) => SettingsScreen(
-  isDarkMode: isDarkMode,
-  selectedLanguage: selectedLanguage,
-  onThemeChanged: updateTheme,
-  onLanguageChanged: updateLanguage,
 
-  // طالما الترجمة مقفولة حاليا
-  t: (key) => key,
-),
+        '/': (_) => const SplashEmptyScreen(),
+
+        '/logo': (_) => const SplashLogoScreen(),
+
+        '/login': (_) => const LoginScreen(),
+
+        '/hello': (_) => const HelloScreen(),
+
+        '/signUp': (_) => const SignUpScreen(),
+
+        '/forget': (_) => const ForgetPass(),
+
+        '/home': (_) => const HomeScreen(),
+
+        '/chat': (_) => const ChatWithUs(),
+
+        '/communication': (_) => const Communication(),
+
+        '/emergency': (_) => const NewContactPage(),
+
+        '/learning': (_) => const Learning(),
+
+        '/level': (_) => const LevelScreen(),
+
+        '/setting': (_) => SettingsScreen(
+          isDarkMode: isDarkMode,
+          selectedLanguage: selectedLanguage,
+          onThemeChanged: updateTheme,
+          onLanguageChanged: updateLanguage,
+          t: (key) => key,
+        ),
       },
     );
   }
