@@ -4,8 +4,8 @@ import 'package:cominsign/core/app_lang.dart';
 import 'package:cominsign/screens/home.dart';
 import 'package:cominsign/screens/forget_pass.dart';
 import 'package:cominsign/screens/signUp.dart';
- // ✅ مهم
-import '../widgets/gradient_background.dart';
+import 'package:cominsign/services/api_service.dart';
+import 'package:cominsign/widgets/gradient_background.dart';
 
 class LoginScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -29,7 +29,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // ================= Guest Warning Dialog =================
   void _showGuestWarningDialog(BuildContext context) {
     bool isChecked = false;
 
@@ -85,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: isChecked
                       ? () {
                           Navigator.pop(dialogContext);
-                          UserSession.isGuest = true; // ✅ Guest
+                          UserSession.isGuest = true;
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
@@ -119,7 +118,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: [
                   const SizedBox(height: 20),
 
-                  // ================= Guest Button =================
                   Align(
                     alignment: Alignment.topRight,
                     child: InkWell(
@@ -151,7 +149,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 80),
 
-                  // ================= Email =================
                   Text(
                     AppLang.t('email'),
                     style: const TextStyle(
@@ -175,8 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value == null || value.isEmpty) {
                         return AppLang.t('email required');
                       }
-                      if (!RegExp(
-                              r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
+                      if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$')
                           .hasMatch(value)) {
                         return AppLang.t('email_invalid');
                       }
@@ -186,7 +182,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
 
-                  // ================= Password =================
                   Text(
                     AppLang.t('password'),
                     style: const TextStyle(
@@ -228,18 +223,32 @@ class _LoginScreenState extends State<LoginScreen> {
 
                   const SizedBox(height: 24),
 
-                  // ================= Login Button =================
                   SizedBox(
                     height: 55,
                     child: GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (_formKey.currentState!.validate()) {
-                          UserSession.isGuest = false; // ✅ Logged in user
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => const HomeScreen()),
-                          );
+                          try {
+                            var data = await ApiService.login(
+                              email: _emailController.text.trim(),
+                              password: _passwordController.text.trim(),
+                            );
+
+                            UserSession.token = data["token"];
+                            UserSession.isGuest = false;
+
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const HomeScreen()),
+                            );
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Invalid email or password"),
+                              ),
+                            );
+                          }
                         }
                       },
                       child: Container(
@@ -317,3 +326,4 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
+       
