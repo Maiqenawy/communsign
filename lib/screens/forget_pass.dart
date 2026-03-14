@@ -1,5 +1,7 @@
-import 'package:flutter/material.dart';
+
+  import 'package:flutter/material.dart';
 import '../widgets/gradient_background.dart';
+import '../services/api_service.dart';
 
 class ForgetPass extends StatefulWidget {
   const ForgetPass({super.key});
@@ -11,8 +13,9 @@ class ForgetPass extends StatefulWidget {
 class ForgetPassState extends State<ForgetPass> {
   final TextEditingController _emailController = TextEditingController();
 
-  // دالة للتحقق من صحة البريد الإلكتروني
-  void _sendEmail() {
+  // إرسال الإيميل للسيرفر
+  void _sendEmail() async {
+
     String email = _emailController.text.trim();
 
     if (email.isEmpty) {
@@ -22,25 +25,43 @@ class ForgetPassState extends State<ForgetPass> {
           backgroundColor: Colors.red,
         ),
       );
-    } else if (!_isValidEmail(email)) {
+      return;
+    }
+
+    if (!_isValidEmail(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please enter a valid email'),
           backgroundColor: Colors.red,
         ),
       );
-    } else {
-      // TODO: أضف هنا منطق إرسال رابط إعادة تعيين كلمة المرور
+      return;
+    }
+
+    try {
+
+      await ApiService.forgotPassword(email);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Password reset link sent to $email'),
-          backgroundColor: Colors.green[700],
+        const SnackBar(
+          content: Text("Reset link sent to your email"),
+          backgroundColor: Colors.green,
         ),
       );
+
+    } catch (e) {
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Failed to send email"),
+          backgroundColor: Colors.red,
+        ),
+      );
+
     }
   }
 
-  // تحقق من صيغة البريد الإلكتروني
+  // التحقق من صحة الإيميل
   bool _isValidEmail(String email) {
     final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email);
@@ -48,19 +69,23 @@ class ForgetPassState extends State<ForgetPass> {
 
   @override
   Widget build(BuildContext context) {
+
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-       appBar: AppBar(),
+      appBar: AppBar(),
       body: GradientBackground(
         child: SingleChildScrollView(
           padding: EdgeInsets.symmetric(
-              horizontal: screenWidth * 0.06, vertical: screenHeight * 0.05),
+            horizontal: screenWidth * 0.06,
+            vertical: screenHeight * 0.05,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // COMMUNISIGN
+
+              /// COMMUNISIGN
               Container(
                 width: screenWidth * 0.6,
                 height: screenHeight * 0.05,
@@ -77,7 +102,7 @@ class ForgetPassState extends State<ForgetPass> {
 
               SizedBox(height: screenHeight * 0.25),
 
-              // Password Recovery
+              /// Password Recovery
               Container(
                 width: screenWidth * 0.75,
                 height: screenHeight * 0.06,
@@ -94,19 +119,18 @@ class ForgetPassState extends State<ForgetPass> {
 
               SizedBox(height: screenHeight * 0.02),
 
-              // النص التوضيحي
+              /// Description
               const Text(
                 'Enter your email',
                 style: TextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.normal,
                   color: Color(0xff2A405D),
                 ),
               ),
 
               SizedBox(height: screenHeight * 0.015),
 
-              // TextField
+              /// Email Field
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -118,14 +142,16 @@ class ForgetPassState extends State<ForgetPass> {
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
-                  contentPadding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 16,
+                    horizontal: 12,
+                  ),
                 ),
               ),
 
               SizedBox(height: screenHeight * 0.03),
 
-              // Send Button
+              /// Send Button
               SizedBox(
                 width: screenWidth * 0.45,
                 child: GestureDetector(
@@ -135,7 +161,10 @@ class ForgetPassState extends State<ForgetPass> {
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(12),
                       gradient: const LinearGradient(
-                        colors: [Color(0xFF2ABC4E), Color(0xFF135624)],
+                        colors: [
+                          Color(0xFF2ABC4E),
+                          Color(0xFF135624)
+                        ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -153,10 +182,12 @@ class ForgetPassState extends State<ForgetPass> {
                   ),
                 ),
               ),
+
             ],
           ),
         ),
       ),
     );
   }
-}
+
+    
