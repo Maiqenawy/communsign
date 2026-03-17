@@ -1,3 +1,4 @@
+import 'package:cominsign/widgets/gradient_background.dart';
 import 'package:flutter/material.dart';
 
 class ChatWithUs extends StatelessWidget {
@@ -15,7 +16,9 @@ class ChatWithUs extends StatelessWidget {
         : const [Color(0xFFEFF9F8), Color(0xFFCFEDEA)];
 
     return Scaffold(
-      body: Container(
+      body: GradientBackground(
+      child: Container(
+
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
@@ -107,6 +110,7 @@ class ChatWithUs extends StatelessWidget {
           ),
         ),
       ),
+    )
     );
   }
 }

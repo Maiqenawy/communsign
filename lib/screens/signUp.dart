@@ -1,7 +1,11 @@
+import 'dart:developer';
 import 'package:cominsign/lib/core/user_session.dart';
 import 'package:flutter/material.dart';
+// ignore: non_constant_identifier_names
+import 'package:cominsign/lib/core/user_session.dart';
 import 'package:cominsign/screens/home.dart';
-import '../widgets/gradient_background.dart';
+import 'package:cominsign/lib/core/service/api-service.dart';
+import '../widgets/gradient_background.dart'; 
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -34,7 +38,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   bool _isValidEmail(String email) {
-    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email.trim());
+    return RegExp(r'^[\w\-.]+@([\w\-]+\.)+[\w\-]{2,4}$')
+        .hasMatch(email.trim());
   }
 
   InputDecoration _fieldDecoration({
@@ -58,25 +63,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-  void _onRegister() {
+  Future<void> _onRegister() async {
     FocusScope.of(context).unfocus();
 
     if (_formKey.currentState!.validate()) {
-      // ✅ بعد التسجيل المستخدم مش Guest
-      UserSession.isGuest = false;
+      try {
+        await Service.register(
+          name: nameController.text.trim(),
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+          confirmPassword: confirmPasswordController.text.trim(),
+          address: addressController.text.trim(),
+        );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Registered successfully!'),
-          behavior: SnackBarBehavior.floating,
-          duration: Duration(seconds: 2),
-        ),
-      );
+        // المستخدم لم يعد Guest
+        UserSession.isGuest = false;
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen()),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Registered successfully!'),
+          ),
+        );
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
+        );
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Register failed"),
+          ),
+        );
+      }
     }
   }
 
@@ -113,7 +132,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     const SizedBox(height: 40),
 
-                    // Name
+                    /// NAME
                     const Text(
                       'Name',
                       style: TextStyle(
@@ -125,7 +144,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     const SizedBox(height: 8),
                     TextFormField(
                       controller: nameController,
-                      decoration: _fieldDecoration(hint: 'Name', isDark: isDark),
+                      decoration:
+                          _fieldDecoration(hint: 'Name', isDark: isDark),
                       validator: (value) {
                         final v = value?.trim() ?? '';
                         if (v.isEmpty) return 'Name is required';
@@ -136,7 +156,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Email
+                    /// EMAIL
                     const Text(
                       'Email',
                       style: TextStyle(
@@ -161,7 +181,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Address
+                    /// ADDRESS
                     const Text(
                       'Address',
                       style: TextStyle(
@@ -174,7 +194,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     TextFormField(
                       controller: addressController,
                       decoration: _fieldDecoration(
-                          hint: 'Enter your address', isDark: isDark),
+                        hint: 'Enter your address',
+                        isDark: isDark,
+                      ),
                       validator: (value) {
                         final v = value?.trim() ?? '';
                         if (v.isEmpty) return 'Address is required';
@@ -185,7 +207,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     const SizedBox(height: 20),
 
-                    // Password
+                    /// PASSWORD
                     const Text(
                       'Password',
                       style: TextStyle(
@@ -214,19 +236,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       validator: (value) {
                         final v = value ?? '';
                         if (v.isEmpty) return 'Password is required';
-                        if (v.length < 6) return 'Password must be 6+ characters';
+                        if (v.length < 6)
+                          return 'Password must be 6+ characters';
                         return null;
-                      },
-                      onChanged: (_) {
-                        if (confirmPasswordController.text.isNotEmpty) {
-                          _formKey.currentState?.validate();
-                        }
                       },
                     ),
 
                     const SizedBox(height: 20),
 
-                    // Confirm Password
+                    /// CONFIRM PASSWORD
                     const Text(
                       'Confirm Password',
                       style: TextStyle(
@@ -248,8 +266,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ? Icons.visibility
                                 : Icons.visibility_off,
                           ),
-                          onPressed: () => setState(
-                              () => showConfirmPassword = !showConfirmPassword),
+                          onPressed: () => setState(() =>
+                              showConfirmPassword = !showConfirmPassword),
                         ),
                       ),
                       validator: (value) {
@@ -264,7 +282,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     const SizedBox(height: 40),
 
-                    // Register Button
+                    /// REGISTER BUTTON
                     Center(
                       child: ElevatedButton(
                         onPressed: _onRegister,

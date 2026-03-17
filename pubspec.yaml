@@ -28,13 +28,13 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
-  flutter:
+ flutter:
     sdk: flutter
-  camera: ^0.10.0
-  http: ^1.2.0
-  shared_preferences: ^2.2.2
-  confetti: ^0.7.0
-  cupertino_icons: ^1.0.8
+ camera: ^0.12.0
+ http: ^0.13.6
+ shared_preferences: ^2.2.2
+ confetti: ^0.7.0
+ cupertino_icons: ^1.0.8
 
 
 dev_dependencies:
