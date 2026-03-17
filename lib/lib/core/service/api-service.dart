@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class Service {
@@ -18,9 +19,7 @@ class Service {
 
     var response = await http.post(
       url,
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "name": name,
         "email": email,
@@ -47,9 +46,7 @@ class Service {
 
     var response = await http.post(
       url,
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "email": email,
         "password": password
@@ -71,9 +68,7 @@ class Service {
     var response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({
-        "email": email
-      }),
+      body: jsonEncode({"email": email}),
     );
 
     if (response.statusCode == 200) {
@@ -106,6 +101,46 @@ class Service {
       return true;
     } else {
       throw Exception("Reset failed");
+    }
+  }
+
+  // ================= TEXT TO SIGNS =================
+  static Future<List<String>> textToSigns(String text) async {
+
+    final response = await http.post(
+      Uri.parse("$baseUrl/ai/text-to-signs"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({"text": text}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return List<String>.from(data["Signs"]);
+    } else {
+      throw Exception("Translation failed");
+    }
+  }
+
+  // ================= SIGN FRAME TO TEXT =================
+  static Future<String> signToText(File image) async {
+
+    var request = http.MultipartRequest(
+      "POST",
+      Uri.parse("$baseUrl/ai/sign-to-text"),
+    );
+
+    request.files.add(
+      await http.MultipartFile.fromPath("Frame", image.path),
+    );
+
+    var response = await request.send();
+    var res = await http.Response.fromStream(response);
+
+    if (res.statusCode == 200) {
+      final data = jsonDecode(res.body);
+      return data["text"];
+    } else {
+      throw Exception("AI prediction failed");
     }
   }
 }
