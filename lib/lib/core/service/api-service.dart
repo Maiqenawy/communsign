@@ -6,6 +6,22 @@ class Service {
 
   static const String baseUrl = "http://cominisign.runasp.net/api";
 
+
+  static String token = "";
+
+
+  static Map<String,String> headers = {
+    "Content-Type": "application/json",
+  };
+
+  
+  static Map<String,String> headersWithAuth() {
+    return {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer $token"
+    };
+  }
+
   // ================= REGISTER =================
   static Future register({
     required String name,
@@ -15,11 +31,9 @@ class Service {
     required String address,
   }) async {
 
-    var url = Uri.parse("$baseUrl/account/register");
-
     var response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
+      Uri.parse("$baseUrl/account/register"),
+      headers: headers,
       body: jsonEncode({
         "name": name,
         "email": email,
@@ -42,11 +56,9 @@ class Service {
     required String password,
   }) async {
 
-    var url = Uri.parse("$baseUrl/account/login");
-
     var response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
+      Uri.parse("$baseUrl/account/login"),
+      headers: headers,
       body: jsonEncode({
         "email": email,
         "password": password
@@ -54,7 +66,14 @@ class Service {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+
+      var data = jsonDecode(response.body);
+
+   
+      token = data["token"];
+
+      return data;
+
     } else {
       throw Exception("Login failed");
     }
@@ -63,11 +82,9 @@ class Service {
   // ================= FORGOT PASSWORD =================
   static Future forgotPassword(String email) async {
 
-    var url = Uri.parse("$baseUrl/account/forgot-password");
-
     var response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
+      Uri.parse("$baseUrl/account/forgot-password"),
+      headers: headers,
       body: jsonEncode({"email": email}),
     );
 
@@ -85,11 +102,9 @@ class Service {
     required String newPassword,
   }) async {
 
-    var url = Uri.parse("$baseUrl/account/reset-password");
-
     var response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
+      Uri.parse("$baseUrl/account/reset-password"),
+      headers: headers,
       body: jsonEncode({
         "email": email,
         "token": token,
@@ -104,6 +119,70 @@ class Service {
     }
   }
 
+  // ================= LEARNING =================
+
+  static Future<List> getLevels() async {
+
+    var res = await http.get(
+      Uri.parse("$baseUrl/learning/levels"),
+      headers: headersWithAuth(), // 
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future<List> getUserLevels() async {
+
+    var res = await http.get(
+      Uri.parse("$baseUrl/learning/user-levels"),
+      headers: headersWithAuth(), // 
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future<List> getWordsWithProgress(int levelId) async {
+
+    var res = await http.get(
+      Uri.parse("$baseUrl/learning/words-with-progress/$levelId"),
+      headers: headersWithAuth(), // 
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future<Map> updateProgress(int wordId) async {
+
+    var res = await http.post(
+      Uri.parse("$baseUrl/learning/progress"),
+      headers: headersWithAuth(), // 
+      body: jsonEncode({
+        "learningWordId": wordId
+      }),
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future<Map> checkLevelCompletion(int levelId) async {
+
+    var res = await http.get(
+      Uri.parse("$baseUrl/learning/check-level-completion/$levelId"),
+      headers: headersWithAuth(), // 
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future unlockNextLevel(int levelId) async {
+
+    await http.post(
+      Uri.parse("$baseUrl/learning/unlock-next-level/$levelId"),
+      headers: headersWithAuth(), // 
+    );
+  }
+
+ 
   // ================= TEXT TO SIGNS =================
   static Future<List<String>> textToSigns(String text) async {
 
