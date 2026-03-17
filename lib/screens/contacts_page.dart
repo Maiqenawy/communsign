@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/contact_service.dart';
-import 'new_contact_page.dart';
+import 'package:cominsign/lib/core/service/api-service.dart';
+import 'newcontact_page.dart';
 import '../widgets/gradient_background.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ContactsPage extends StatefulWidget {
   const ContactsPage({super.key});
@@ -23,22 +24,20 @@ class _ContactsPageState extends State<ContactsPage> {
   Future<void> init() async {
     final prefs = await SharedPreferences.getInstance();
     token = prefs.getString("token") ?? "";
-
     loadContacts();
   }
 
   Future<void> loadContacts() async {
     try {
-      final data = await ContactService.getContacts(token);
+      final data = await Service.getContacts(token);
       setState(() => contacts = data);
     } catch (e) {
       print(e);
     }
   }
-}
 
   Future<void> deleteContact(int id) async {
-    await ContactService.deleteContact(id, token);
+    await Service.deleteContact(id, token);
     loadContacts();
   }
 
@@ -53,7 +52,7 @@ class _ContactsPageState extends State<ContactsPage> {
             children: [
               const SizedBox(height: 20),
 
-              // 🔥 Header
+              // Header
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -74,7 +73,7 @@ class _ContactsPageState extends State<ContactsPage> {
 
               const SizedBox(height: 20),
 
-              // 📋 List
+              // List
               Expanded(
                 child: contacts.isEmpty
                     ? Center(
@@ -109,8 +108,8 @@ class _ContactsPageState extends State<ContactsPage> {
                               subtitle: Text(
                                 "${c["email"]} • ${c["relation"] ?? ""}",
                                 style: TextStyle(
-                                    color:
-                                        cs.onSurface.withOpacity(0.7)),
+                                  color: cs.onSurface.withOpacity(0.7),
+                                ),
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -123,8 +122,7 @@ class _ContactsPageState extends State<ContactsPage> {
                                         context,
                                         MaterialPageRoute(
                                           builder: (_) =>
-                                              NewContactPage(
-                                                  contact: c),
+                                              NewContactPage(contact: c),
                                         ),
                                       ).then((_) => loadContacts());
                                     },
@@ -147,7 +145,7 @@ class _ContactsPageState extends State<ContactsPage> {
         ),
       ),
 
-      // ➕ Add Button
+      // Add Button
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(

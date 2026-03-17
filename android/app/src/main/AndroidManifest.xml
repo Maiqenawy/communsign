@@ -1,10 +1,16 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.cominsign">
 
-    <!-- Permissions -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <!-- ===================== Permissions ===================== -->
     <uses-permission android:name="android.permission.CAMERA"/>
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.INTERNET"/>
 <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+=======
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <!-- ===================== Application ===================== -->
+>>>>>>> 4ac39e4 (save local changes before pull)
     <application
         android:label="cominsign"
         android:name="${applicationName}"
@@ -32,14 +38,14 @@
 
         </activity>
 
-        <!-- Flutter embedding -->
+        <!-- Flutter embedding version 2 -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2"/>
 
     </application>
 
-    <!-- Query for text processing -->
+    <!-- ===================== Query for text processing ===================== -->
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>

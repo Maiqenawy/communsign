@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/gradient_background.dart';
-import '../services/service.dart';
-import '../core/user_session.dart';
+import 'package:cominsign/lib/core/service/api-service.dart';
+import 'package:cominsign/lib/core/user_session.dart';
 import 'login_screen.dart';
 import 'Level_screen.dart';
 

@@ -1,10 +1,10 @@
 import 'dart:io';
-
+import 'package:cominsign/lib/core/service/api-service.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-import '../services/api_service.dart';
+
 
 class Communication extends StatefulWidget {
   const Communication({super.key});
@@ -40,7 +40,7 @@ class _CommunicationState extends State<Communication> {
     });
 
     final result =
-        await ApiService.textToSigns(textController.text);
+        await Service.textToSigns(textController.text);
 
     setState(() {
 
@@ -108,7 +108,7 @@ class _CommunicationState extends State<Communication> {
     });
 
     final result =
-        await ApiService.signToText(File(image.path));
+        await Service.signToText(File(image.path));
 
     setState(() {
 

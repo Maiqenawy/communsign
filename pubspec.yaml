@@ -33,11 +33,12 @@ dependencies:
  confetti: ^0.7.0
  cupertino_icons: ^1.0.8
  geolocator: ^10.0.0
-  firebase_core: ^2.30.0
-  firebase_messaging: ^14.7.0
+ firebase_core: ^2.30.0
+ firebase_messaging: ^14.7.0
+ 
 
   # Deep Link
-  app_links: ^6.3.2
+ app_links: ^6.3.2
 
 dev_dependencies:
   flutter_test:

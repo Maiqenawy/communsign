@@ -1,5 +1,5 @@
+import 'package:cominsign/lib/core/service/api-service.dart';
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
 
 class ResetPasswordScreen extends StatefulWidget {
 
@@ -34,7 +34,7 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
     try {
 
-      await ApiService.resetPassword(
+      await Service.resetPassword(
         email: widget.email,
         token: widget.token,
         newPassword: passwordController.text,

@@ -1,7 +1,8 @@
+import 'package:cominsign/lib/core/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:app_links/app_links.dart';
-
+import 'reset_password.dart';
 import 'home.dart';
 import 'setting.dart';
 import 'splash_empty.dart';
@@ -15,7 +16,7 @@ import 'communication.dart';
 import 'emergency.dart';
 import 'learning.dart';
 import 'Level_screen.dart';
-import 'reset_password_screen.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -153,11 +154,11 @@ class _MyAppState extends State<MyApp> {
 
         '/communication': (_) => const Communication(),
 
-        '/emergency': (_) => const NewContactPage(),
+        '/emergency': (_) => const EmergencyPage(),
 
         '/learning': (_) => const Learning(),
 
-        '/level': (_) => const LevelScreen(),
+        '/level': (_) => const LevelScreen(levelId: 1,),
 
         '/setting': (_) => SettingsScreen(
           isDarkMode: isDarkMode,

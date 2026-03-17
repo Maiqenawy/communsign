@@ -120,7 +120,7 @@ class Service {
   }
 // ================= CONTACTS =================
 
-  static Future<List> getContacts() async {
+  static Future<List> getContacts(String token) async {
     var res = await http.get(
       Uri.parse("$baseUrl/contact"),
       headers: headersWithAuth(),
@@ -129,7 +129,7 @@ class Service {
     return jsonDecode(res.body);
   }
 
-  static Future addContact(int userId, String relation) async {
+  static Future addContact(int userId, String relation, String token) async {
     await http.post(
       Uri.parse("$baseUrl/contact"),
       headers: headersWithAuth(),
@@ -140,7 +140,7 @@ class Service {
     );
   }
 
-  static Future updateContact(int contactId, String relation) async {
+  static Future updateContact(int contactId, String relation, String token) async {
     await http.put(
       Uri.parse("$baseUrl/contact/$contactId"),
       headers: headersWithAuth(),
@@ -150,7 +150,7 @@ class Service {
     );
   }
 
-  static Future deleteContact(int contactId) async {
+  static Future deleteContact(int contactId, String token) async {
     await http.delete(
       Uri.parse("$baseUrl/contact/$contactId"),
       headers: headersWithAuth(),
@@ -159,7 +159,7 @@ class Service {
 
 
   
-  static Future<List> searchUser(String email) async {
+  static Future<List> searchUser(String email, String token) async {
   var res = await http.get(
     Uri.parse("$baseUrl/contact/search?email=$email"),
     headers: headersWithAuth(),

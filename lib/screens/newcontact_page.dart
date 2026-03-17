@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/contact_service.dart';
+import 'package:cominsign/lib/core/service/api-service.dart';
 import '../widgets/gradient_background.dart';
 
 class NewContactPage extends StatefulWidget {
@@ -38,7 +38,7 @@ class _NewContactPageState extends State<NewContactPage> {
 
     try {
       final data =
-          await ContactService.searchUser(email.text, token);
+          await  Service.searchUser(email.text, token);
 
       setState(() => results = data);
     } catch (e) {
@@ -60,10 +60,10 @@ class _NewContactPageState extends State<NewContactPage> {
 
     try {
       if (widget.contact == null) {
-        await ContactService.addContact(
+        await  Service.addContact(
             selectedUserId!, relation.text, token);
       } else {
-        await ContactService.updateContact(
+        await  Service.updateContact(
             widget.contact["contactId"],
             relation.text,
             token);

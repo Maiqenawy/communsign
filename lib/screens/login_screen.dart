@@ -1,10 +1,11 @@
+
+import 'package:cominsign/lib/core/service/api-service.dart';
 import 'package:cominsign/lib/core/user_session.dart';
 import 'package:flutter/material.dart';
 import 'package:cominsign/core/app_lang.dart';
 import 'package:cominsign/screens/home.dart';
 import 'package:cominsign/screens/forget_pass.dart';
 import 'package:cominsign/screens/signUp.dart';
-import 'package:cominsign/services/api_service.dart';
 import 'package:cominsign/widgets/gradient_background.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -229,7 +230,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onTap: () async {
                         if (_formKey.currentState!.validate()) {
                           try {
-                            var data = await ApiService.login(
+                            var data = await Service.login(
                               email: _emailController.text.trim(),
                               password: _passwordController.text.trim(),
                             );

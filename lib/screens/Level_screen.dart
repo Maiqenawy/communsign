@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/service.dart';
+import 'package:cominsign/lib/core/service/api-service.dart';
 import 'complete_level.dart';
 import '../widgets/gradient_background.dart';
 
