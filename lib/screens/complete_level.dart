@@ -5,12 +5,11 @@ class LevelCompleteScreen extends StatefulWidget {
   final int level;
   final int coinsEarned;
 
-  const LevelCompleteScreen({
-    Key? key,
-    this.level = 1,
-    required this.coinsEarned, required int coins,
-  }) : super(key: key);
-
+ const LevelCompleteScreen({
+  Key? key,
+  required this.level,
+  required this.coinsEarned,
+}) : super(key: key);
   @override
   State<LevelCompleteScreen> createState() => _LevelCompleteScreenState();
 }
