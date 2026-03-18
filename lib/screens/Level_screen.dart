@@ -56,7 +56,7 @@ class _LevelScreenState extends State<LevelScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (_) => CompleteLevel(
+          builder: (_) => LevelCompleteScreen(
             level: widget.levelId,
             coinsEarned: coins,
           ),
