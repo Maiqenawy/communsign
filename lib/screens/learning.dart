@@ -1,7 +1,9 @@
-import 'package:cominsign/screens/Level_screen.dart';
 import 'package:flutter/material.dart';
 import '../widgets/gradient_background.dart';
 import '../services/service.dart';
+import '../core/user_session.dart';
+import 'login_screen.dart';
+import 'Level_screen.dart';
 
 class Learning extends StatefulWidget {
   const Learning({super.key});
@@ -11,29 +13,29 @@ class Learning extends StatefulWidget {
 }
 
 class _LearningState extends State<Learning> {
-
   List levels = [];
   List userLevels = [];
   bool loading = true;
-@override
-void initState() {
-  super.initState();
 
-  if (UserSession.token.isEmpty) {
-    Future.microtask(() {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    });
-    return;
+  @override
+  void initState() {
+    super.initState();
+
+    // ✅ CHECK LOGIN
+    if (!UserSession.isLoggedIn) {
+      Future.microtask(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      });
+      return;
+    }
+
+    loadData();
   }
 
-  loadData();
-}
-
   Future loadData() async {
-
     final l = await Service.getLevels();
     final u = await Service.getUserLevels();
 
@@ -53,7 +55,7 @@ void initState() {
   @override
   Widget build(BuildContext context) {
 
-    if(loading){
+    if (loading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
@@ -79,31 +81,10 @@ void initState() {
 
                 const SizedBox(height: 30),
 
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  height: 300,
-                  decoration: BoxDecoration(
-                    color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(
-                      color: Colors.white.withOpacity(0.3),
-                      width: 2,
-                    ),
-                  ),
-                  child: Center(
-                    child: Image.asset(
-                      'images/download (7).png',
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 30),
-
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Column(
-                    children: levels.map((level){
+                    children: levels.map((level) {
 
                       final locked = isLocked(level["levelId"]);
 
