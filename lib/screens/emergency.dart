@@ -15,11 +15,22 @@ class _EmergencyPageState extends State<EmergencyPage> {
   List pictograms = [];
   String token = "";
 
-  @override
-  void initState() {
-    super.initState();
-    initPage();
+ @override
+void initState() {
+  super.initState();
+
+  if (UserSession.token.isEmpty) {
+    Future.microtask(() {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    });
+    return;
   }
+
+  initPage();
+}
 
    
   Future<void> initPage() async {
