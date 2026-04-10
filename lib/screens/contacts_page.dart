@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/contact_service.dart';
 import 'new_contact_page.dart';
+import '../widgets/gradient_background.dart';
 
 class ContactsPage extends StatefulWidget {
   const ContactsPage({super.key});
@@ -20,10 +21,12 @@ class _ContactsPageState extends State<ContactsPage> {
   }
 
   Future<void> loadContacts() async {
-    final data = await ContactService.getContacts(token);
-    setState(() {
-      contacts = data;
-    });
+    try {
+      final data = await ContactService.getContacts(token);
+      setState(() => contacts = data);
+    } catch (e) {
+      print(e);
+    }
   }
 
   Future<void> deleteContact(int id) async {
@@ -36,48 +39,117 @@ class _ContactsPageState extends State<ContactsPage> {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Contacts")),
-      body: ListView.builder(
-        itemCount: contacts.length,
-        itemBuilder: (context, index) {
-          final c = contacts[index];
+      body: GradientBackground(
+        child: SafeArea(
+          child: Column(
+            children: [
+              const SizedBox(height: 20),
 
-          return Container(
-            margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: cs.surface.withOpacity(0.8),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: ListTile(
-              leading: const CircleAvatar(child: Icon(Icons.person)),
-              title: Text(c["name"]),
-              subtitle: Text("${c["email"]} • ${c["relation"] ?? ""}"),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  IconButton(
-                    icon: Icon(Icons.edit, color: cs.primary),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => NewContactPage(
-                            contact: c,
-                          ),
-                        ),
-                      ).then((_) => loadContacts());
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () => deleteContact(c["contactId"]),
-                  ),
-                ],
+              // 🔥 Header
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Icon(Icons.contacts, color: cs.onSurface, size: 28),
+                    const SizedBox(width: 10),
+                    Text(
+                      "Contacts",
+                      style: TextStyle(
+                        fontSize: 26,
+                        fontWeight: FontWeight.bold,
+                        color: cs.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+
+              const SizedBox(height: 20),
+
+              // 📋 List
+              Expanded(
+                child: contacts.isEmpty
+                    ? Center(
+                        child: Text(
+                          "No Contacts",
+                          style: TextStyle(color: cs.onSurface),
+                        ),
+                      )
+                    : ListView.builder(
+                        itemCount: contacts.length,
+                        itemBuilder: (context, index) {
+                          final c = contacts[index];
+
+                          return Container(
+                            margin: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 6),
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: cs.surface.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: cs.surface,
+                                child: Icon(Icons.person,
+                                    color: cs.onSurface),
+                              ),
+                              title: Text(
+                                c["name"],
+                                style: TextStyle(color: cs.onSurface),
+                              ),
+                              subtitle: Text(
+                                "${c["email"]} • ${c["relation"] ?? ""}",
+                                style: TextStyle(
+                                    color:
+                                        cs.onSurface.withOpacity(0.7)),
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: Icon(Icons.edit,
+                                        color: cs.primary),
+                                    onPressed: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) =>
+                                              NewContactPage(
+                                                  contact: c),
+                                        ),
+                                      ).then((_) => loadContacts());
+                                    },
+                                  ),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete,
+                                        color: Colors.red),
+                                    onPressed: () =>
+                                        deleteContact(c["contactId"]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+              ),
+            ],
+          ),
+        ),
+      ),
+
+      // ➕ Add Button
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => const NewContactPage(),
             ),
-          );
+          ).then((_) => loadContacts());
         },
+        child: const Icon(Icons.add),
       ),
     );
   }
