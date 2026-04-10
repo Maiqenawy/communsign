@@ -12,11 +12,18 @@ class ContactsPage extends StatefulWidget {
 
 class _ContactsPageState extends State<ContactsPage> {
   List contacts = [];
-  String token = "YOUR_TOKEN";
+  String token = "";
 
   @override
   void initState() {
     super.initState();
+    init();
+  }
+
+  Future<void> init() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString("token") ?? "";
+
     loadContacts();
   }
 
@@ -28,6 +35,7 @@ class _ContactsPageState extends State<ContactsPage> {
       print(e);
     }
   }
+}
 
   Future<void> deleteContact(int id) async {
     await ContactService.deleteContact(id, token);
