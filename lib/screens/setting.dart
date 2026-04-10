@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cominsign/core/app_lang.dart';
 import '../widgets/gradient_background.dart';
+import '../core/user_session.dart';
 import 'contacts_page.dart';
+import 'login_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -30,6 +32,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
+
+    // ✅ PROTECT PAGE
+    if (!UserSession.isLoggedIn) {
+      Future.microtask(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      });
+      return;
+    }
+
     isDarkMode = widget.isDarkMode;
     selectedLanguage = widget.selectedLanguage;
   }
@@ -73,8 +87,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     _buildDarkModeOption(),
                     const SizedBox(height: 30),
 
-                    // ✅ CONTACTS BUTTON (IMPORTANT PART)
+                    // ✅ CONTACTS
                     _buildContactsOption(),
+
+                    const SizedBox(height: 40),
+
+                    // ✅ LOGOUT
+                    _buildLogoutButton(),
                   ],
                 ),
               ),
@@ -180,17 +199,51 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: "Emergency Contacts",
       trailing: const Icon(Icons.arrow_forward_ios, size: 18),
       onTap: () {
+        if (!UserSession.isLoggedIn) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+          );
+          return;
+        }
+
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (_) => const ContactsPage(),
-          ),
+          MaterialPageRoute(builder: (_) => const ContactsPage()),
         );
       },
     );
   }
 
-  // ================= ROW (FIXED WITH onTap) =================
+  // ================= LOGOUT =================
+  Widget _buildLogoutButton() {
+    return Center(
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.red,
+          padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        onPressed: () async {
+          await UserSession.logout();
+
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+            (route) => false,
+          );
+        },
+        child: const Text(
+          "Logout",
+          style: TextStyle(fontSize: 18, color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  // ================= ROW =================
   Widget _buildSettingRow({
     required IconData icon,
     required String title,
