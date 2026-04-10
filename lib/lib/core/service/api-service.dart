@@ -118,7 +118,116 @@ class Service {
       throw Exception("Reset failed");
     }
   }
+// ================= CONTACTS =================
 
+  static Future<List> getContacts() async {
+    var res = await http.get(
+      Uri.parse("$baseUrl/contact"),
+      headers: headersWithAuth(),
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future addContact(int userId, String relation) async {
+    await http.post(
+      Uri.parse("$baseUrl/contact"),
+      headers: headersWithAuth(),
+      body: jsonEncode({
+        "contactUserId": userId,
+        "relation": relation
+      }),
+    );
+  }
+
+  static Future updateContact(int contactId, String relation) async {
+    await http.put(
+      Uri.parse("$baseUrl/contact/$contactId"),
+      headers: headersWithAuth(),
+      body: jsonEncode({
+        "relation": relation
+      }),
+    );
+  }
+
+  static Future deleteContact(int contactId) async {
+    await http.delete(
+      Uri.parse("$baseUrl/contact/$contactId"),
+      headers: headersWithAuth(),
+    );
+  }
+
+
+  
+  static Future<List> searchUser(String email) async {
+  var res = await http.get(
+    Uri.parse("$baseUrl/contact/search?email=$email"),
+    headers: headersWithAuth(),
+  );
+
+  return jsonDecode(res.body);
+}
+  // ================= SETTINGS =================
+
+  static Future<Map> getSettings() async {
+    var res = await http.get(
+      Uri.parse("$baseUrl/settings"),
+      headers: headersWithAuth(),
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future updateSettings({
+    required bool darkMode,
+    required String language,
+    required String avatarName,
+  }) async {
+
+    await http.put(
+      Uri.parse("$baseUrl/settings"),
+      headers: headersWithAuth(),
+      body: jsonEncode({
+        "darkMode": darkMode,
+        "language": language,
+        "avatarName": avatarName
+      }),
+    );
+  }
+// ================= EMERGENCY =================
+
+  static Future<List> getPictograms() async {
+    var res = await http.get(
+      Uri.parse("$baseUrl/emergency/pictograms"),
+      headers: headersWithAuth(),
+    );
+
+    return jsonDecode(res.body);
+  }
+
+  static Future sendSOS({
+    required int pictogramId,
+    required String location,
+  }) async {
+
+    await http.post(
+      Uri.parse("$baseUrl/emergency/send-sos/$pictogramId"),
+      headers: headersWithAuth(),
+      body: jsonEncode({
+        "location": location
+      }),
+    );
+  }
+ // ================= FIREBASE TOKEN =================
+  static Future updateDeviceToken(String fcmToken) async {
+    await http.post(
+      Uri.parse("$baseUrl/account/update-device-token"),
+      headers: headersWithAuth(),
+      body: jsonEncode({
+        "fcmToken": fcmToken
+      }),
+    );
+  }
   // ================= LEARNING =================
 
   static Future<List> getLevels() async {
