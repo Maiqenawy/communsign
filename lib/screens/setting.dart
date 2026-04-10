@@ -177,18 +177,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   // ================= Emergency =================
-  Widget _buildEmergencyContactsOption() {
-    return _buildSettingRow(
-      icon: Icons.phone,
-      title: t('emergency'),
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        color: textColor,
-        size: 18,
-      ),
-    );
-  }
-
+ onTap: () {
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => const ContactsPage()),
+  );
+},
   // ================= Row =================
   Widget _buildSettingRow({
     required IconData icon,
