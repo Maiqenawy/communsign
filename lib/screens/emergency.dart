@@ -3,7 +3,8 @@ import '../widgets/gradient_background.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/emergency_service.dart';
 import '../services/firebase_service.dart';
-import 'dart:convert';
+import '../core/user_session.dart';
+import 'login_screen.dart';
 
 class EmergencyPage extends StatefulWidget {
   const EmergencyPage({super.key});
@@ -11,33 +12,31 @@ class EmergencyPage extends StatefulWidget {
   @override
   State<EmergencyPage> createState() => _EmergencyPageState();
 }
+
 class _EmergencyPageState extends State<EmergencyPage> {
   List pictograms = [];
-  String token = "";
+  late String token;
 
- @override
-void initState() {
-  super.initState();
+  @override
+  void initState() {
+    super.initState();
 
-  if (UserSession.token.isEmpty) {
-    Future.microtask(() {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => const LoginScreen()),
-      );
-    });
-    return;
+    // ✅ CHECK LOGIN
+    if (!UserSession.isLoggedIn) {
+      Future.microtask(() {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (_) => const LoginScreen()),
+        );
+      });
+      return;
+    }
+
+    token = UserSession.token!;
+    initPage();
   }
 
-  initPage();
-}
-
-   
   Future<void> initPage() async {
-    final prefs = await SharedPreferences.getInstance();
-    token = prefs.getString("token") ?? "";
-
-    
     await FirebaseService.init(token);
     await loadData();
   }
@@ -48,7 +47,6 @@ void initState() {
       pictograms = data;
     });
   }
-}
 
   Future<String> getLocation() async {
     await Geolocator.requestPermission();
