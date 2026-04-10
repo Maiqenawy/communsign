@@ -1,0 +1,18 @@
+import 'package:flutter/material.dart';
+import '../core/user_session.dart';
+import '../screens/login_screen.dart';
+
+void checkAuth(BuildContext context, Widget page) {
+  if (UserSession.token.isEmpty) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const LoginScreen()),
+    );
+    return;
+  }
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (_) => page),
+  );
+}
