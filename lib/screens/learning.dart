@@ -15,12 +15,22 @@ class _LearningState extends State<Learning> {
   List levels = [];
   List userLevels = [];
   bool loading = true;
+@override
+void initState() {
+  super.initState();
 
-  @override
-  void initState() {
-    super.initState();
-    loadData();
+  if (UserSession.token.isEmpty) {
+    Future.microtask(() {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => const LoginScreen()),
+      );
+    });
+    return;
   }
+
+  loadData();
+}
 
   Future loadData() async {
 
