@@ -19,6 +19,7 @@ import 'reset_password_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+    await UserSession.loadToken();
 
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('dark_mode') ?? false;
