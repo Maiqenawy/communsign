@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cominsign/core/app_lang.dart';
 import '../widgets/gradient_background.dart';
+import 'contacts_page.dart';
 
 class SettingsScreen extends StatefulWidget {
   final bool isDarkMode;
@@ -37,7 +38,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Color get textColor => isDarkMode ? Colors.white : Colors.black;
 
-  // بدل withOpacity (deprecated)
   Color get iconBg => isDarkMode
       ? const Color.fromRGBO(255, 255, 255, 0.20)
       : const Color.fromRGBO(0, 0, 0, 0.08);
@@ -48,7 +48,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // ✅ أي تغيير في AppLang.notifier => الصفحة تعمل rebuild
     return ValueListenableBuilder<int>(
       valueListenable: AppLang.notifier,
       builder: (_, __, ___) {
@@ -73,7 +72,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     const SizedBox(height: 30),
                     _buildDarkModeOption(),
                     const SizedBox(height: 30),
-                    _buildEmergencyContactsOption(),
+
+                    // ✅ CONTACTS BUTTON (IMPORTANT PART)
+                    _buildContactsOption(),
                   ],
                 ),
               ),
@@ -84,7 +85,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ================= Header =================
+  // ================= HEADER =================
   Widget _buildHeader() {
     return Row(
       children: [
@@ -102,7 +103,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ================= Profile =================
+  // ================= PROFILE =================
   Widget _buildUserProfile() {
     return Row(
       children: [
@@ -110,7 +111,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           radius: 40,
           backgroundColor: Colors.grey[300],
           backgroundImage: const AssetImage('images/SETTING.png'),
-          onBackgroundImageError: (_, __) {},
           child: const Icon(Icons.person, size: 40),
         ),
         const SizedBox(width: 20),
@@ -126,15 +126,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ================= Divider =================
+  // ================= DIVIDER =================
   Widget _buildDivider() {
-    return Container(
-      height: 1,
-      color: dividerColor,
-    );
+    return Container(height: 1, color: dividerColor);
   }
 
-  // ================= Title =================
+  // ================= TITLE =================
   Widget _buildPreferencesTitle() {
     return Text(
       t('preferences'),
@@ -146,7 +143,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ================= Language =================
+  // ================= LANGUAGE =================
   Widget _buildLanguageOption() {
     return _buildSettingRow(
       icon: Icons.language,
@@ -161,7 +158,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ================= Dark Mode =================
+  // ================= DARK MODE =================
   Widget _buildDarkModeOption() {
     return _buildSettingRow(
       icon: Icons.dark_mode,
@@ -176,41 +173,55 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  // ================= Emergency =================
- onTap: () {
-  Navigator.push(
-    context,
-    MaterialPageRoute(builder: (_) => const ContactsPage()),
-  );
-},
-  // ================= Row =================
+  // ================= CONTACTS =================
+  Widget _buildContactsOption() {
+    return _buildSettingRow(
+      icon: Icons.contacts,
+      title: "Emergency Contacts",
+      trailing: const Icon(Icons.arrow_forward_ios, size: 18),
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const ContactsPage(),
+          ),
+        );
+      },
+    );
+  }
+
+  // ================= ROW (FIXED WITH onTap) =================
   Widget _buildSettingRow({
     required IconData icon,
     required String title,
     required Widget trailing,
+    VoidCallback? onTap,
   }) {
-    return Row(
-      children: [
-        CircleAvatar(
-          backgroundColor: iconBg,
-          child: Icon(icon, color: textColor),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: Text(
-            title,
-            style: TextStyle(
-              color: textColor,
-              fontSize: 20,
+    return InkWell(
+      onTap: onTap,
+      child: Row(
+        children: [
+          CircleAvatar(
+            backgroundColor: iconBg,
+            child: Icon(icon, color: textColor),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Text(
+              title,
+              style: TextStyle(
+                color: textColor,
+                fontSize: 20,
+              ),
             ),
           ),
-        ),
-        trailing,
-      ],
+          trailing,
+        ],
+      ),
     );
   }
 
-  // ================= Language Dialog =================
+  // ================= LANGUAGE DIALOG =================
   void _showLanguageDialog() {
     showDialog(
       context: context,
@@ -231,12 +242,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return ListTile(
       title: Text(lang),
       onTap: () async {
-        // ✅ حملي JSON فورًا عشان الكلام يتغير لحظيًا
         await AppLang.load(lang);
 
         setState(() => selectedLanguage = lang);
-
-        // ✅ خزن/حدث الحالة في main
         widget.onLanguageChanged(lang);
 
         Navigator.pop(context);
