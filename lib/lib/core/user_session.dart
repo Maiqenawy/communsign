@@ -17,19 +17,14 @@ class UserSession {
     token = prefs.getString("token");
   }import 'package:shared_preferences/shared_preferences.dart';
 
-class UserSession {
-  static String? token;
-  static bool isGuest = false;
-
-  // ✅ حفظ التوكن
-  static Future<void> saveToken(String value) async {
+  // ✅ تسجيل خروج
+  static Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString("token", value);
-    token = value;
+    await prefs.remove("token");
+    token = null;
+    isGuest = false;
   }
 
-  // ✅ تحميل التوكن
-  static Future<void> loadToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    token = prefs.getString("token");
-  }
+  // ✅ هل المستخدم مسجل؟
+  static bool get isLoggedIn => token != null;
+}
