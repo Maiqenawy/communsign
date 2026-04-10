@@ -234,7 +234,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               password: _passwordController.text.trim(),
                             );
 
-                            UserSession.token = data["token"];
+                            await UserSession.saveToken(data["token"]);
                             UserSession.isGuest = false;
 
                             Navigator.pushReplacement(
