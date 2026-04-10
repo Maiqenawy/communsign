@@ -11,16 +11,24 @@ class EmergencyPage extends StatefulWidget {
   @override
   State<EmergencyPage> createState() => _EmergencyPageState();
 }
-
 class _EmergencyPageState extends State<EmergencyPage> {
   List pictograms = [];
-  String token = "YOUR_TOKEN";
+  String token = "";
 
   @override
   void initState() {
     super.initState();
-    loadData();
-    FirebaseService.init(token);
+    initPage();
+  }
+
+   
+  Future<void> initPage() async {
+    final prefs = await SharedPreferences.getInstance();
+    token = prefs.getString("token") ?? "";
+
+    
+    await FirebaseService.init(token);
+    await loadData();
   }
 
   Future<void> loadData() async {
@@ -29,6 +37,7 @@ class _EmergencyPageState extends State<EmergencyPage> {
       pictograms = data;
     });
   }
+}
 
   Future<String> getLocation() async {
     await Geolocator.requestPermission();
