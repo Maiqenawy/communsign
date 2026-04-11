@@ -5,6 +5,7 @@ import 'package:cominsign/lib/core/user_session.dart';
 import 'login_screen.dart';
 import 'Level_screen.dart';
 
+
 class Learning extends StatefulWidget {
   const Learning({super.key});
 
@@ -48,7 +49,7 @@ class _LearningState extends State<Learning> {
 
   bool isLocked(int levelId) {
     return !userLevels.any(
-      (u) => u["levelId"] == levelId && u["isUnlocked"]
+      (u) => u["levelId"] == levelId && u["isUnlocked"],
     );
   }
 
@@ -94,9 +95,9 @@ class _LearningState extends State<Learning> {
                           levelName: level["name"],
                           coins: level["requiredCoins"],
                           isLocked: locked,
-                          gradientColors: [
-                            const Color(0xFF80CBC4),
-                            const Color(0xFF4DB6AC)
+                          gradientColors: const [
+                            Color(0xFF80CBC4),
+                            Color(0xFF4DB6AC),
                           ],
                           onTap: () {
                             Navigator.push(
@@ -110,7 +111,6 @@ class _LearningState extends State<Learning> {
                           },
                         ),
                       );
-
                     }).toList(),
                   ),
                 ),
@@ -119,6 +119,84 @@ class _LearningState extends State<Learning> {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+///////////////////////////////////////////////////////
+/// ⭐ LEVEL CARD (FIXED - NO ERROR)
+///////////////////////////////////////////////////////
+
+class LevelCard extends StatelessWidget {
+  final String levelName;
+  final int coins;
+  final bool isLocked;
+  final List<Color> gradientColors;
+  final VoidCallback onTap;
+
+  const LevelCard({
+    super.key,
+    required this.levelName,
+    required this.coins,
+    required this.isLocked,
+    required this.gradientColors,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: isLocked ? null : onTap,
+      child: Container(
+        padding: const EdgeInsets.all(18),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isLocked
+                ? [Colors.grey, Colors.grey]
+                : gradientColors,
+          ),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: const [
+            BoxShadow(
+              color: Colors.black26,
+              blurRadius: 6,
+              offset: Offset(0, 3),
+            )
+          ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              levelName,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+
+            Row(
+              children: [
+                if (isLocked)
+                  const Icon(Icons.lock, color: Colors.white)
+                else ...[
+                  const Icon(Icons.monetization_on,
+                      color: Colors.yellow),
+                  const SizedBox(width: 5),
+                  Text(
+                    '$coins',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ],
         ),
       ),
     );

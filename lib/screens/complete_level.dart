@@ -1,15 +1,26 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import 'package:audioplayers/audioplayers.dart';
+
 
 class LevelCompleteScreen extends StatefulWidget {
   final int level;
   final int coinsEarned;
 
+<<<<<<< HEAD
  const LevelCompleteScreen({
   Key? key,
   required this.level,
   required this.coinsEarned,
 }) : super(key: key);
+=======
+  const LevelCompleteScreen({
+    Key? key,
+    this.level = 1,
+    required this.coinsEarned,
+  }) : super(key: key);
+
+>>>>>>> 2d235c4 (save changes)
   @override
   State<LevelCompleteScreen> createState() => _LevelCompleteScreenState();
 }
@@ -17,26 +28,36 @@ class LevelCompleteScreen extends StatefulWidget {
 class _LevelCompleteScreenState extends State<LevelCompleteScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  final player = AudioPlayer();
 
   @override
   void initState() {
     super.initState();
+
     _controller = AnimationController(
       duration: const Duration(seconds: 3),
       vsync: this,
     )..repeat();
+
+    /// 🔊 تشغيل الصوت مرة واحدة مع الأنيميشن
+    player.setReleaseMode(ReleaseMode.stop);
+
+    Future.delayed(const Duration(milliseconds: 300), () {
+      player.play(AssetSource('sounds/freesound_community-success-1-6297.mp3'));
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    player.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-       appBar: AppBar(),
+      appBar: AppBar(),
       body: Container(
         decoration: const BoxDecoration(
           gradient: LinearGradient(
@@ -52,22 +73,22 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
         child: SafeArea(
           child: Stack(
             children: [
-              // Confetti floating shapes
+              /// 🎉 Confetti
               ...List.generate(20, (index) {
                 return FloatingConfetti(
                   controller: _controller,
                   index: index,
                 );
               }),
-              
-              // Main content
+
+              /// 📱 المحتوى
               Column(
                 children: [
                   const SizedBox(height: 20),
 
-                  Text(
+                  const Text(
                     'COMMUNISIGN',
-                    style: const TextStyle(
+                    style: TextStyle(
                       color: Color(0xFF2C5F7C),
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -77,16 +98,16 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
 
                   const Spacer(),
 
-                  // Medal Icon with level number
+                  /// 🏅 الدائرة (الليفل)
                   Container(
                     width: 200,
                     height: 200,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      color: Colors.amber[400],
+                      color: Colors.amber,
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
+                          color: Colors.black26,
                           blurRadius: 10,
                           spreadRadius: 5,
                         ),
@@ -106,7 +127,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
 
                   const SizedBox(height: 20),
 
-                  // Coins earned
+                  /// 💰 الكوينز
                   Text(
                     'You earned ${widget.coinsEarned} coins!',
                     style: const TextStyle(
@@ -118,7 +139,6 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
 
                   const SizedBox(height: 40),
 
-                  // Level up text
                   const Text(
                     'Yay! Level up!',
                     style: TextStyle(
@@ -130,7 +150,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
 
                   const Spacer(),
 
-                  // Continue button
+                  /// 🔘 زرار Continue
                   Padding(
                     padding: const EdgeInsets.all(32.0),
                     child: ElevatedButton(
@@ -168,6 +188,7 @@ class _LevelCompleteScreenState extends State<LevelCompleteScreen>
   }
 }
 
+/// 🎉 الكونفيتي
 class FloatingConfetti extends StatelessWidget {
   final AnimationController controller;
   final int index;
@@ -183,7 +204,13 @@ class FloatingConfetti extends StatelessWidget {
     final random = math.Random(index);
     final startX = random.nextDouble();
     final size = 20 + random.nextDouble() * 30;
-    final colors = [Colors.pink, Colors.blue, Colors.yellow, Colors.green, Colors.orange];
+    final colors = [
+      Colors.pink,
+      Colors.blue,
+      Colors.yellow,
+      Colors.green,
+      Colors.orange
+    ];
     final color = colors[index % colors.length];
 
     return AnimatedBuilder(
@@ -194,7 +221,8 @@ class FloatingConfetti extends StatelessWidget {
         final screenHeight = MediaQuery.of(context).size.height;
 
         return Positioned(
-          left: startX * screenWidth + math.sin(progress * math.pi * 2) * 30,
+          left: startX * screenWidth +
+              math.sin(progress * math.pi * 2) * 30,
           top: progress * screenHeight,
           child: Transform.rotate(
             angle: progress * math.pi * 4,

@@ -158,7 +158,11 @@ class _MyAppState extends State<MyApp> {
 
         '/learning': (_) => const Learning(),
 
+<<<<<<< HEAD
         '/level': (_) => const LevelScreen(levelId: 1,),
+=======
+        '/level': (_) => const LevelScreen(levelId:1,),
+>>>>>>> 2d235c4 (save changes)
 
         '/setting': (_) => SettingsScreen(
           isDarkMode: isDarkMode,

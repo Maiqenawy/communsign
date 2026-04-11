@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'package:cominsign/screens/newcontact_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cominsign/core/app_lang.dart';
