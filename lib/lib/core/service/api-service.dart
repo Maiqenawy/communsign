@@ -20,31 +20,33 @@ class Service {
 
   // ================= REGISTER =================
   static Future register({
-    required String name,
-    required String email,
-    required String password,
-    required String confirmPassword,
-    required String address,
-  }) async {
-    var response = await http.post(
-      Uri.parse("$baseUrl/account/register"),
-      headers: headers,
-      body: jsonEncode({
-        "name": name,
-        "email": email,
-        "password": password,
-        "confirmPassword": confirmPassword,
-        "address": address,
-      }),
-    );
+  required String name,
+  required String email,
+  required String password,
+  required String confirmPassword,
+  required String address,
+}) async {
+  var response = await http.post(
+    Uri.parse("$baseUrl/account/register"),
+    headers: headers,
+    body: jsonEncode({
+      "name": name,
+      "email": email,
+      "password": password,
+      "confirmPassword": confirmPassword,
+      "address": address,
+    }),
+  );
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception("Register failed");
-    }
+  print("STATUS: ${response.statusCode}");
+  print("BODY: ${response.body}");
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception(response.body); 
   }
-
+}
   // ================= LOGIN =================
   static Future login({
     required String email,
