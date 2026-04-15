@@ -1,9 +1,8 @@
+import 'package:cominsign/lib/core/service/api-service.dart';
+import 'package:cominsign/lib/core/user_session.dart';
 import 'package:flutter/material.dart';
 import '../widgets/gradient_background.dart';
 import 'package:geolocator/geolocator.dart';
-import '../services/emergency_service.dart';
-import '../services/firebase_service.dart';
-import '../core/user_session.dart';
 import 'login_screen.dart';
 
 class EmergencyPage extends StatefulWidget {
@@ -15,13 +14,11 @@ class EmergencyPage extends StatefulWidget {
 
 class _EmergencyPageState extends State<EmergencyPage> {
   List pictograms = [];
-  late String token;
 
   @override
   void initState() {
     super.initState();
 
-    // ✅ CHECK LOGIN
     if (!UserSession.isLoggedIn) {
       Future.microtask(() {
         Navigator.pushReplacement(
@@ -32,17 +29,12 @@ class _EmergencyPageState extends State<EmergencyPage> {
       return;
     }
 
-    token = UserSession.token!;
-    initPage();
-  }
-
-  Future<void> initPage() async {
-    await FirebaseService.init(token);
-    await loadData();
+    loadData();
   }
 
   Future<void> loadData() async {
-    final data = await EmergencyService.getPictograms(token);
+    final data = await Service.getPictograms();
+
     setState(() {
       pictograms = data;
     });
@@ -55,14 +47,22 @@ class _EmergencyPageState extends State<EmergencyPage> {
   }
 
   Future<void> sendSOS(int id) async {
-    String location = await getLocation();
+    try {
+      String location = await getLocation();
 
-    bool success =
-        await EmergencyService.sendSOS(token, id, location);
+      await Service.sendSOS(
+        pictogramId: id,
+        location: location,
+      );
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(success ? "SOS Sent 🚨" : "Failed")),
-    );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("SOS Sent 🚨")),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Failed to send SOS")),
+      );
+    }
   }
 
   IconData getIcon(String name) {

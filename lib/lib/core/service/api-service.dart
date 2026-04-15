@@ -3,22 +3,18 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class Service {
-
   static const String baseUrl = "http://cominisign.runasp.net/api";
-
 
   static String token = "";
 
-
-  static Map<String,String> headers = {
+  static Map<String, String> headers = {
     "Content-Type": "application/json",
   };
 
-  
-  static Map<String,String> headersWithAuth() {
+  static Map<String, String> headersWithAuth() {
     return {
       "Content-Type": "application/json",
-      "Authorization": "Bearer $token"
+      "Authorization": "Bearer $token",
     };
   }
 
@@ -30,7 +26,6 @@ class Service {
     required String confirmPassword,
     required String address,
   }) async {
-
     var response = await http.post(
       Uri.parse("$baseUrl/account/register"),
       headers: headers,
@@ -39,7 +34,7 @@ class Service {
         "email": email,
         "password": password,
         "confirmPassword": confirmPassword,
-        "address": address
+        "address": address,
       }),
     );
 
@@ -55,25 +50,19 @@ class Service {
     required String email,
     required String password,
   }) async {
-
     var response = await http.post(
       Uri.parse("$baseUrl/account/login"),
       headers: headers,
       body: jsonEncode({
         "email": email,
-        "password": password
+        "password": password,
       }),
     );
 
     if (response.statusCode == 200) {
-
       var data = jsonDecode(response.body);
-
-   
       token = data["token"];
-
       return data;
-
     } else {
       throw Exception("Login failed");
     }
@@ -81,7 +70,6 @@ class Service {
 
   // ================= FORGOT PASSWORD =================
   static Future forgotPassword(String email) async {
-
     var response = await http.post(
       Uri.parse("$baseUrl/account/forgot-password"),
       headers: headers,
@@ -101,14 +89,13 @@ class Service {
     required String token,
     required String newPassword,
   }) async {
-
     var response = await http.post(
       Uri.parse("$baseUrl/account/reset-password"),
       headers: headers,
       body: jsonEncode({
         "email": email,
         "token": token,
-        "newPassword": newPassword
+        "newPassword": newPassword,
       }),
     );
 
@@ -118,8 +105,8 @@ class Service {
       throw Exception("Reset failed");
     }
   }
-// ================= CONTACTS =================
 
+  // ================= CONTACTS =================
   static Future<List> getContacts(String token) async {
     var res = await http.get(
       Uri.parse("$baseUrl/contact"),
@@ -135,7 +122,7 @@ class Service {
       headers: headersWithAuth(),
       body: jsonEncode({
         "contactUserId": userId,
-        "relation": relation
+        "relation": relation,
       }),
     );
   }
@@ -145,7 +132,7 @@ class Service {
       Uri.parse("$baseUrl/contact/$contactId"),
       headers: headersWithAuth(),
       body: jsonEncode({
-        "relation": relation
+        "relation": relation,
       }),
     );
   }
@@ -157,18 +144,16 @@ class Service {
     );
   }
 
-
-  
   static Future<List> searchUser(String email, String token) async {
-  var res = await http.get(
-    Uri.parse("$baseUrl/contact/search?email=$email"),
-    headers: headersWithAuth(),
-  );
+    var res = await http.get(
+      Uri.parse("$baseUrl/contact/search?email=$email"),
+      headers: headersWithAuth(),
+    );
 
-  return jsonDecode(res.body);
-}
+    return jsonDecode(res.body);
+  }
+
   // ================= SETTINGS =================
-
   static Future<Map> getSettings() async {
     var res = await http.get(
       Uri.parse("$baseUrl/settings"),
@@ -183,19 +168,18 @@ class Service {
     required String language,
     required String avatarName,
   }) async {
-
     await http.put(
       Uri.parse("$baseUrl/settings"),
       headers: headersWithAuth(),
       body: jsonEncode({
         "darkMode": darkMode,
         "language": language,
-        "avatarName": avatarName
+        "avatarName": avatarName,
       }),
     );
   }
-// ================= EMERGENCY =================
 
+  // ================= EMERGENCY =================
   static Future<List> getPictograms() async {
     var res = await http.get(
       Uri.parse("$baseUrl/emergency/pictograms"),
@@ -205,68 +189,65 @@ class Service {
     return jsonDecode(res.body);
   }
 
+  // ✅ FIXED sendSOS (NO duplicate location)
   static Future sendSOS({
     required int pictogramId,
     required String location,
   }) async {
-
     await http.post(
       Uri.parse("$baseUrl/emergency/send-sos/$pictogramId"),
       headers: headersWithAuth(),
       body: jsonEncode({
-        "location": location
+        "location": location,
       }),
     );
   }
- // ================= FIREBASE TOKEN =================
+
+  // ================= FIREBASE TOKEN =================
   static Future updateDeviceToken(String fcmToken) async {
     await http.post(
       Uri.parse("$baseUrl/account/update-device-token"),
       headers: headersWithAuth(),
       body: jsonEncode({
-        "fcmToken": fcmToken
+        "fcmToken": fcmToken,
       }),
     );
   }
+
   // ================= LEARNING =================
-
   static Future<List> getLevels() async {
-
     var res = await http.get(
       Uri.parse("$baseUrl/learning/levels"),
-      headers: headersWithAuth(), // 
+      headers: headersWithAuth(),
     );
 
     return jsonDecode(res.body);
   }
 
   static Future<List> getUserLevels() async {
-
     var res = await http.get(
       Uri.parse("$baseUrl/learning/user-levels"),
-      headers: headersWithAuth(), // 
+      headers: headersWithAuth(),
     );
 
     return jsonDecode(res.body);
   }
 
   static Future<List> getWordsWithProgress(int levelId) async {
-
     var res = await http.get(
       Uri.parse("$baseUrl/learning/words-with-progress/$levelId"),
-      headers: headersWithAuth(), // 
+      headers: headersWithAuth(),
     );
 
     return jsonDecode(res.body);
   }
 
   static Future<Map> updateProgress(int wordId) async {
-
     var res = await http.post(
       Uri.parse("$baseUrl/learning/progress"),
-      headers: headersWithAuth(), // 
+      headers: headersWithAuth(),
       body: jsonEncode({
-        "learningWordId": wordId
+        "learningWordId": wordId,
       }),
     );
 
@@ -274,30 +255,26 @@ class Service {
   }
 
   static Future<Map> checkLevelCompletion(int levelId) async {
-
     var res = await http.get(
       Uri.parse("$baseUrl/learning/check-level-completion/$levelId"),
-      headers: headersWithAuth(), // 
+      headers: headersWithAuth(),
     );
 
     return jsonDecode(res.body);
   }
 
   static Future unlockNextLevel(int levelId) async {
-
     await http.post(
       Uri.parse("$baseUrl/learning/unlock-next-level/$levelId"),
-      headers: headersWithAuth(), // 
+      headers: headersWithAuth(),
     );
   }
 
- 
   // ================= TEXT TO SIGNS =================
   static Future<List<String>> textToSigns(String text) async {
-
     final response = await http.post(
       Uri.parse("$baseUrl/ai/text-to-signs"),
-      headers: {"Content-Type": "application/json"},
+      headers: headers,
       body: jsonEncode({"text": text}),
     );
 
@@ -309,9 +286,8 @@ class Service {
     }
   }
 
-  // ================= SIGN FRAME TO TEXT =================
+  // ================= SIGN TO TEXT =================
   static Future<String> signToText(File image) async {
-
     var request = http.MultipartRequest(
       "POST",
       Uri.parse("$baseUrl/ai/sign-to-text"),
