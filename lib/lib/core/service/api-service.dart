@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class Service {
-  static const String baseUrl = "http://cominisign.runasp.net/api";
+  static const String baseUrl = "https://cominisign.runasp.net/api";
 
   static String token = "";
 
