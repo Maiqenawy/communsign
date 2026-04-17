@@ -27,7 +27,7 @@ class Service {
   required String address,
 }) async {
   var response = await http.post(
-    Uri.parse("$baseUrl/account/register"),
+    Uri.parse("$baseUrl/Account/register"),
     headers: headers,
     body: jsonEncode({
       "name": name,
@@ -53,7 +53,7 @@ class Service {
     required String password,
   }) async {
     var response = await http.post(
-      Uri.parse("$baseUrl/account/login"),
+      Uri.parse("$baseUrl/Account/login"),
       headers: headers,
       body: jsonEncode({
         "email": email,
@@ -73,7 +73,7 @@ class Service {
   // ================= FORGOT PASSWORD =================
   static Future forgotPassword(String email) async {
     var response = await http.post(
-      Uri.parse("$baseUrl/account/forgot-password"),
+      Uri.parse("$baseUrl/Account/forgot-password"),
       headers: headers,
       body: jsonEncode({"email": email}),
     );
@@ -92,7 +92,7 @@ class Service {
     required String newPassword,
   }) async {
     var response = await http.post(
-      Uri.parse("$baseUrl/account/reset-password"),
+      Uri.parse("$baseUrl/Account/reset-password"),
       headers: headers,
       body: jsonEncode({
         "email": email,
