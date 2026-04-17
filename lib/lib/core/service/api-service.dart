@@ -19,32 +19,46 @@ class Service {
   }
 
   // ================= REGISTER =================
-  static Future register({
+ static Future register({
   required String name,
   required String email,
   required String password,
   required String confirmPassword,
   required String address,
 }) async {
-  var response = await http.post(
-    Uri.parse("$baseUrl/Account/register"),
-    headers: headers,
-    body: jsonEncode({
-      "name": name,
-      "email": email,
-      "password": password,
-      "confirmPassword": confirmPassword,
-      "address": address,
-    }),
-  );
+  try {
+    var response = await http.post(
+      Uri.parse("$baseUrl/Account/register"),
+      headers: headers,
+      body: jsonEncode({
+        "name": name,
+        "email": email,
+        "password": password,
+        "confirmPassword": confirmPassword,
+        "address": address,
+      }),
+    );
 
-  print("STATUS: ${response.statusCode}");
-  print("BODY: ${response.body}");
+    print("STATUS: ${response.statusCode}");
+    print("BODY: ${response.body}");
 
-  if (response.statusCode == 200) {
-    return jsonDecode(response.body);
-  } else {
-    throw Exception(response.body); 
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      final data = jsonDecode(response.body);
+
+      // لو السيرفر بيرجع errors
+      if (data is Map && data.containsKey("errors")) {
+        final errors = data["errors"];
+        return Future.error(errors.toString());
+      }
+
+      return Future.error(data["message"] ?? "Register failed");
+    }
+  } on SocketException {
+    return Future.error("No internet connection");
+  } catch (e) {
+    return Future.error("Something went wrong");
   }
 }
   // ================= LOGIN =================
